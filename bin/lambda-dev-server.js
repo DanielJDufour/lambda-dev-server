@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const http = require("http");
+const path = require("path");
 
 const DEFAULT_CONTENT_TYPE = "application/json";
 const DEFAULT_PORT = 8080;
@@ -66,6 +67,12 @@ function serve({ handler: handlerPath, debug = false, max = Infinity, port, root
 
       const event = { queryStringParameters };
       if (debug) console.log("[lds] event is ", event);
+
+      if (!path.isAbsolute(handlerPath)) {
+        handlerPath = path.resolve(root, handlerPath);
+      }
+
+      if (debug) console.log(`[lds] serving function at "${handlerPath}"`);
 
       // reload function on each request
       const { handler } = require(handlerPath);
