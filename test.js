@@ -44,7 +44,7 @@ test(`"hello, {name}"`, async ({ eq }) => {
 
 test("internal error capture", async ({ eq }) => {
   const { port } = serve({
-    debug: true,
+    debug: false,
     handler: "./test-function/internal-error.js",
     max: 1
   });

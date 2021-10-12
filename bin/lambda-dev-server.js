@@ -74,7 +74,15 @@ function serve({ handler: handlerPath, debug = false, max = Infinity, port, root
 
       if (debug) console.log(`[lds] serving function at "${handlerPath}"`);
 
-      // reload function on each request
+      // clear previously loaded handler (if any) from cache
+      try {
+        const requirePath = require.resolve(handlerPath);
+        delete require.cache[requirePath];
+      } catch (error) {
+        console.error(error);
+      }
+
+      // load handler
       const { handler } = require(handlerPath);
       if (debug) console.log("[lds] handler:", handler);
 
