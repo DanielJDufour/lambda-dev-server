@@ -1,0 +1,37 @@
+{
+  "name": "lambda-dev-server",
+  "version": "0.0.0",
+  "description": "Run Lambda Functions on your Machine. Configure through CLI Flags and Environmental Variables. Log Almost Everything!",
+  "main": "lambda-dev-server.js",
+  "bin": {
+    "lambda-dev-server": "lambda-dev-server.js"
+  },
+  "files": [
+    "lambda-dev-server.js",
+    "bin/lambda-dev-server.js"
+  ],
+  "scripts": {
+    "build": "mkdir -p bin && echo \"#!/usr/bin/env node\n\" > ./bin/lambda-dev-server.js && cat lambda-dev-server.js >> ./bin/lambda-dev-server.js",
+    "format": "npx prettier --arrow-parens=avoid --print-width=120 --trailing-comma=none --write lambda-dev-server.js *.js",
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielJDufour/lambda-dev-server.git"
+  },
+  "keywords": [
+    "aws",
+    "cloud",
+    "dev",
+    "function",
+    "lambda",
+    "local",
+    "test"
+  ],
+  "author": "Daniel J. Dufour",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/DanielJDufour/lambda-dev-server/issues"
+  },
+  "homepage": "https://github.com/DanielJDufour/lambda-dev-server#readme"
+}
