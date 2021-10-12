@@ -1,4 +1,3 @@
-const fs = require("fs");
 const http = require("http");
 
 const DEFAULT_CONTENT_TYPE = "application/json";
