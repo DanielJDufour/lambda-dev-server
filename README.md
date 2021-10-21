@@ -18,7 +18,9 @@ npm install lambda-dev-server
 const { serve } = require("lambda-dev-server");
 
 const { port } = serve({
+  // you can also directly pass in the handler function
   handler: "./test-function/handler.js",
+
   debug: true,
   max: 100, // maximum number of function requests served
   port: 8888,
