@@ -6,7 +6,7 @@ const DEFAULT_PORT = 8080;
 
 const TRUES = ["TRUE", "True", "true", true];
 
-function serve({ handler: handlerPath, debug = false, max = Infinity, port, root }) {
+function serve({ handler: handlerPath, debug = false, max = Infinity, port, reload = true, root }) {
   if (debug) console.log("[lds] starting lambda-dev-server (lds)");
 
   if (typeof handlerPath !== "string" || handlerPath.trim() === "") {
@@ -72,12 +72,14 @@ function serve({ handler: handlerPath, debug = false, max = Infinity, port, root
 
       if (debug) console.log(`[lds] serving function at "${handlerPath}"`);
 
-      // clear previously loaded handler (if any) from cache
-      try {
-        const requirePath = require.resolve(handlerPath);
-        delete require.cache[requirePath];
-      } catch (error) {
-        console.error(error);
+      if (reload) {
+        // clear previously loaded handler (if any) from cache
+        try {
+          const requirePath = require.resolve(handlerPath);
+          delete require.cache[requirePath];
+        } catch (error) {
+          console.error(error);
+        }
       }
 
       // load handler
@@ -143,6 +145,7 @@ if (require.main === module) {
     max: Array.prototype.slice.call(str.match(/-?-max(?:=|== )(\d+)/) || [], 1)[0],
     handler: Array.prototype.slice.call(str.match(/-?-handler(?:=|== )([^ ]+)/) || [], 1)[0],
     port: Array.prototype.slice.call(str.match(/-?-port(?:=|== )(\d+)/) || [], 1)[0],
+    reload: !!str.match(/-?-reload(=|== )(false|False|False)?/),
     root: Array.prototype.slice.call(str.match(/-?-root(?:=|== )([^ ]+)/) || [], 1)[0]
   });
 }

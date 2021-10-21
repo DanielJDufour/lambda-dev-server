@@ -56,3 +56,40 @@ test("internal error capture", async ({ eq }) => {
   });
   eq(data.startsWith("Error: uh oh"), true);
 });
+
+test("no-reload", async ({ eq }) => {
+  const numRequests = 10;
+  const { port } = serve({
+    debug: false,
+    handler: "./test-function/request-counter.js",
+    max: numRequests,
+    reload: false
+  });
+  for (let i = 0; i < numRequests; i++) {
+    const data = await get({
+      hostname: "localhost",
+      port,
+      path: "/",
+      method: "GET"
+    });
+    eq(data, (i + 1).toString());
+  }
+});
+
+test("reload", async ({ eq }) => {
+  const numRequests = 10;
+  const { port } = serve({
+    debug: false,
+    handler: "./test-function/request-counter.js",
+    max: numRequests
+  });
+  for (let i = 0; i < numRequests; i++) {
+    const data = await get({
+      hostname: "localhost",
+      port,
+      path: "/",
+      method: "GET"
+    });
+    eq(data, "1");
+  }
+});

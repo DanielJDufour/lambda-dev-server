@@ -22,13 +22,20 @@ const { port } = serve({
   debug: true,
   max: 100, // maximum number of function requests served
   port: 8888,
+
+  // optional
+  // default is true
+  // if unset or set to true, it will load the most recent version of the handler
+  // on each request clearing any in-memory cache
+  reload: false,
+
   root: "./project"
 });
 ```
 
 ## in terminal
 ```sh
-lambda-dev-server --debug=true --handler=./dist/index.js --max=99 --port=8888 --root=$PWD/project
+lambda-dev-server --debug=true --handler=./dist/index.js --max=99 --port=8888 --reload=false --root=$PWD/project
 ```
 
 ## invoking lambda function
