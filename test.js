@@ -93,3 +93,23 @@ test("reload", async ({ eq }) => {
     eq(data, "1");
   }
 });
+
+test("handler is function", async ({ eq }) => {
+  const { port } = serve({
+    debug: false,
+    handler: () => ({
+      body: "hello",
+      headers: {
+        "Content-Type": "text/plain"
+      }
+    }),
+    max: 1
+  });
+  const data = await get({
+    hostname: "localhost",
+    port,
+    path: "/",
+    method: "GET"
+  });
+  eq(data, "hello");
+});

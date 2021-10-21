@@ -6,11 +6,22 @@ const DEFAULT_PORT = 8080;
 
 const TRUES = ["TRUE", "True", "true", true];
 
-function serve({ handler: handlerPath, debug = false, max = Infinity, port, reload = true, root }) {
+function serve({ handler, debug = false, max = Infinity, port, reload, root }) {
   if (debug) console.log("[lds] starting lambda-dev-server (lds)");
 
-  if (typeof handlerPath !== "string" || handlerPath.trim() === "") {
+  if (typeof handler === "string") handler = handler.trim();
+
+  if (!["string", "function"].includes(typeof handler) || handler === "") {
     throw new Error("[lds] handler must be set");
+  }
+
+  if (typeof handler === "function" && reload === undefined) reload = false;
+  else if (typeof handler === "string" && reload === undefined) reload = true;
+
+  if (typeof handler === "function" && reload) {
+    throw new Error(
+      "[lds] you can't pass in a handler function and reload on each request. Please pass in a path to your handler instead or set reload to false"
+    );
   }
 
   if (!root) {
@@ -68,16 +79,16 @@ function serve({ handler: handlerPath, debug = false, max = Infinity, port, relo
       const event = { queryStringParameters };
       if (debug) console.log("[lds] event is ", event);
 
-      if (!path.isAbsolute(handlerPath)) {
-        handlerPath = path.resolve(root, handlerPath);
+      if (typeof handler === "string" && !path.isAbsolute(handler)) {
+        handler = path.resolve(root, handler);
       }
 
-      if (debug) console.log(`[lds] serving function at "${handlerPath}"`);
+      if (debug && typeof handler === "string") console.log(`[lds] serving function at "${handler}"`);
 
-      if (reload) {
+      if (reload && typeof handler === "string") {
         // clear previously loaded handler (if any) from cache
         try {
-          const requirePath = require.resolve(handlerPath);
+          const requirePath = require.resolve(handler);
           delete require.cache[requirePath];
         } catch (error) {
           console.error(error);
@@ -85,12 +96,23 @@ function serve({ handler: handlerPath, debug = false, max = Infinity, port, relo
       }
 
       // load handler
-      const { handler } = require(handlerPath);
-      if (debug) console.log("[lds] handler:", handler);
+      let handlerFunction;
+      if (typeof handler === "string") {
+        const handlerModule = require(handler);
+        if (typeof handlerModule.handler === "function") {
+          handlerFunction = handlerModule.handler;
+        } else if (typeof handlerModule === "function") {
+          handlerFunction = handlerModule;
+        }
+      } else if (typeof handler === "function") {
+        handlerFunction = handler;
+      }
+
+      if (debug) console.log("[lds] handlerFunction:", handlerFunction);
 
       let statusCode, isBase64Encoded, headers, body;
       try {
-        const result = await handler(event, {});
+        const result = await handlerFunction(event, {});
         if (!result.body) throw new Error(`handler returned body "${result.body}"`);
         ({ statusCode = 200, isBase64Encoded, headers = {}, body } = result);
         if (debug) console.log(`[lds] status code is "${statusCode}"`);
