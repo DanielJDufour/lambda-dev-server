@@ -13,6 +13,7 @@
   "scripts": {
     "build": "mkdir -p bin && echo \"#!/usr/bin/env node\n\" > ./bin/lambda-dev-server.js && cat lambda-dev-server.js >> ./bin/lambda-dev-server.js",
     "format": "npx prettier --arrow-parens=avoid --print-width=120 --trailing-comma=none --write lambda-dev-server.js *.js",
+    "prepublishOnly": "npm run format && npm run build",
     "test": "node test.js"
   },
   "repository": {
