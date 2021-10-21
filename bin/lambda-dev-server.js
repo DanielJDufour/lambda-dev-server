@@ -149,7 +149,7 @@ if (require.main === module) {
     max: Array.prototype.slice.call(str.match(/-?-max(?:=|== )(\d+)/) || [], 1)[0],
     handler: Array.prototype.slice.call(str.match(/-?-handler(?:=|== )([^ ]+)/) || [], 1)[0],
     port: Array.prototype.slice.call(str.match(/-?-port(?:=|== )(\d+)/) || [], 1)[0],
-    reload: !str.match(/-?-reload(=|== )(false|False|False)?/),
+    reload: !str.match(/-?-reload(=|== )(false|False|False)/),
     root: Array.prototype.slice.call(str.match(/-?-root(?:=|== )([^ ]+)/) || [], 1)[0]
   });
 }
