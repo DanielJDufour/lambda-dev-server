@@ -24,6 +24,8 @@ function serve({ handler: handlerPath, debug = false, max = Infinity, port, relo
   if (!port) port = process.env.LDS_DEFAULT_PORT ? process.env.LDS_DEFAULT_PORT : DEFAULT_PORT;
   port = parseInt(port);
 
+  if (debug) console.log(`[lds] ${reload === false ? "**not** " : ""}reloading handler on each request`);
+
   function checkForCloseRequest() {
     if (TRUES.includes(process.env.LDS_PLZ_CLOSE)) {
       server.close();
@@ -145,7 +147,7 @@ if (require.main === module) {
     max: Array.prototype.slice.call(str.match(/-?-max(?:=|== )(\d+)/) || [], 1)[0],
     handler: Array.prototype.slice.call(str.match(/-?-handler(?:=|== )([^ ]+)/) || [], 1)[0],
     port: Array.prototype.slice.call(str.match(/-?-port(?:=|== )(\d+)/) || [], 1)[0],
-    reload: !!str.match(/-?-reload(=|== )(false|False|False)?/),
+    reload: !str.match(/-?-reload(=|== )(false|False|False)?/),
     root: Array.prototype.slice.call(str.match(/-?-root(?:=|== )([^ ]+)/) || [], 1)[0]
   });
 }
