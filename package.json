@@ -1,6 +1,6 @@
 {
   "name": "lambda-dev-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Run Lambda Functions on your Machine. Configure through CLI Flags and Environmental Variables. Log Almost Everything!",
   "main": "lambda-dev-server.js",
   "bin": {
