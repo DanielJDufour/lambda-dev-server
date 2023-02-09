@@ -1,13 +1,34 @@
+const fs = require("fs");
 const http = require("http");
 const path = require("path");
 
 const DEFAULT_CONTENT_TYPE = "application/json";
 const DEFAULT_PORT = 8080;
 
-const TRUES = ["TRUE", "True", "true", true];
+const TRUES = ["T", "TRUE", "True", "true", true];
 
-function serve({ handler, debug = false, max = Infinity, port, reload, root }) {
+function serve({ cors = false, env, handler, debug = false, max = Infinity, port, reload, root }) {
   if (debug) console.log("[lds] starting lambda-dev-server (lds)");
+
+  if (typeof env === "string") {
+    if (!path.isAbsolute(env)) throw new Error("[lds] env must not be a relative path");
+    const lines = fs
+      .readFileSync(env, "utf-8")
+      .split(/\n\r?/g)
+      .filter(ln => !ln.match(/^[ \t]*#/));
+    lines.forEach(line => {
+      const ieq = line.indexOf("=");
+      if (ieq === -1) return;
+      const key = line.substring(0, ieq);
+      let value = line.substring(ieq + 1);
+      if (value.startsWith('"') && value.endsWith('"')) value = value.substring(1, value.length - 1);
+      process.env[key] = value;
+    });
+  } else if (typeof env === "object") {
+    for (let key in env) {
+      process.env[key] = env[key];
+    }
+  }
 
   if (typeof handler === "string") handler = handler.trim();
 
@@ -125,6 +146,9 @@ function serve({ handler, debug = false, max = Infinity, port, reload, root }) {
         if (debug) console.log(`[lds] Content-Type headers not set, so defaulting to "${DEFAULT_CONTENT_TYPE}"`);
         headers["Content-Type"] = DEFAULT_CONTENT_TYPE;
       }
+      if (cors && !headers["Access-Control-Allow-Origin"]) {
+        headers["Access-Control-Allow-Origin"] = "*";
+      }
       Object.entries(headers).forEach(([k, v]) => {
         if (debug) console.log(`[lds] setting header "${k}" to "${v}"`);
         response.setHeader(k, v);
@@ -165,7 +189,9 @@ if (require.main === module) {
   const str = args.join(" ");
 
   serve({
-    debug: !!str.match(/-?-debug((=|== )(true|True|TRUE))?/),
+    cors: !!str.match(/-?-cors((=|== )(t|T|true|True|TRUE))?/),
+    debug: !!str.match(/-?-debug((=|== )(t|T|true|True|TRUE))?/),
+    env: Array.prototype.slice.call(str.match(/-?-env(?:=|== )([^ ]+)/) || [], 1)[0],
     max: Array.prototype.slice.call(str.match(/-?-max(?:=|== )(\d+)/) || [], 1)[0],
     handler: Array.prototype.slice.call(str.match(/-?-handler(?:=|== )([^ ]+)/) || [], 1)[0],
     port: Array.prototype.slice.call(str.match(/-?-port(?:=|== )(\d+)/) || [], 1)[0],

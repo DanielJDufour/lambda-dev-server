@@ -21,7 +21,9 @@ const { port } = serve({
   // you can also directly pass in the handler function
   handler: "./test-function/handler.js",
 
+  cors: true, // enable cross-origin resource sharing
   debug: true,
+  env: { AWS_REGION: "us-east-1" } // environment object or absolute path to .env file
   max: 100, // maximum number of function requests served
   port: 8888,
 
@@ -37,7 +39,7 @@ const { port } = serve({
 
 ## in terminal
 ```sh
-lambda-dev-server --debug=true --handler=./dist/index.js --max=99 --port=8888 --reload=false --root=$PWD/project
+lambda-dev-server --cors=true --debug=true --env=$PWD/.env --handler=./dist/index.js --max=99 --port=8888 --reload=false --root=$PWD/project
 ```
 
 ## invoking lambda function
