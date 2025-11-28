@@ -39,7 +39,7 @@ const { port } = serve({
 
 ## in terminal
 ```sh
-lambda-dev-server --cors=true --debug=true --env=$PWD/.env --handler=./dist/index.js --max=99 --port=8888 --reload=false --root=$PWD/project
+lambda-dev-server --cors=true --debug=true --env=.env --handler=./dist/index.js --max=99 --port=8888 --reload=false --root=$PWD/project
 ```
 
 ## invoking lambda function

@@ -137,7 +137,25 @@ test("cors", async ({ eq }) => {
   eq(headers["access-control-allow-origin"], "*");
 });
 
-test("env", async ({ eq }) => {
+test("env with relative env path", async ({ eq }) => {
+  console.log(process.cwd());
+  const { port } = serve({
+    cors: true,
+    debug: false,
+    env: "./test-function/.env.test",
+    handler: process.cwd() + "/test-function/return-aws-region.js",
+    max: 1
+  });
+  const { data } = await get({
+    hostname: "localhost",
+    port,
+    path: "/",
+    method: "GET"
+  });
+  eq(data, "us-east-1");
+});
+
+test("env with absolute env path", async ({ eq }) => {
   console.log(process.cwd());
   const { port } = serve({
     cors: true,
