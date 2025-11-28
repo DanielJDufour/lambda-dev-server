@@ -23,7 +23,7 @@ const { port } = serve({
 
   cors: true, // enable cross-origin resource sharing
   debug: true,
-  env: { AWS_REGION: "us-east-1" }, // environment object or absolute path to .env file
+  env: { AWS_REGION: "us-east-1" }, // environment object or path to .env file
   max: 100, // maximum number of function requests served
   port: 8888,
 
