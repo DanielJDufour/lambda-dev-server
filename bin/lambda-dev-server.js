@@ -13,7 +13,9 @@ function serve({ cors = false, env, handler, debug = false, max = Infinity, port
   if (debug) console.log("[lds] starting lambda-dev-server (lds)");
 
   if (typeof env === "string") {
-    if (!path.isAbsolute(env)) throw new Error("[lds] env must not be a relative path");
+    if (!path.isAbsolute(env)) {
+      env = path.resolve(env);
+    }
     const lines = fs
       .readFileSync(env, "utf-8")
       .split(/\n\r?/g)
