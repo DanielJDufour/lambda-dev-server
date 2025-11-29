@@ -33,13 +33,19 @@ const { port } = serve({
   // on each request clearing any in-memory cache
   reload: false,
 
+  // optional
+  // default is false
+  // automatically redirect all requests to root,
+  // truncating path
+  redirect: true,
+
   root: "./project"
 });
 ```
 
 ## in terminal
 ```sh
-lambda-dev-server --cors=true --debug=true --env=.env --handler=./dist/index.js --max=99 --port=8888 --reload=false --root=$PWD/project
+lambda-dev-server --cors=true --debug=true --env=.env --handler=./dist/index.js --max=99 --port=8888 --redirect=true --reload=false --root=$PWD/project
 ```
 
 ## invoking lambda function

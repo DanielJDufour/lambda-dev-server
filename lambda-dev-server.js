@@ -7,7 +7,7 @@ const DEFAULT_PORT = 8080;
 
 const TRUES = ["T", "TRUE", "True", "true", true];
 
-function serve({ cors = false, env, handler, debug = false, max = Infinity, port, reload, root }) {
+function serve({ cors = false, env, handler, debug = false, max = Infinity, port, redirect = false, reload, root }) {
   if (debug) console.log("[lds] starting lambda-dev-server (lds)");
 
   if (typeof env === "string") {
@@ -80,7 +80,7 @@ function serve({ cors = false, env, handler, debug = false, max = Infinity, port
 
       const { pathname, searchParams } = new URL(`http://localhost:${port}` + url);
 
-      if (pathname !== "" && pathname !== "/") {
+      if (redirect && pathname !== "" && pathname !== "/") {
         const searchParamsAsString = searchParams.toString();
         // redirect to root path
         response.writeHead(302, {
@@ -99,7 +99,7 @@ function serve({ cors = false, env, handler, debug = false, max = Infinity, port
         console.log("[lds] queryStringParameters:", queryStringParameters);
       }
 
-      const event = { queryStringParameters };
+      const event = { queryStringParameters, path: pathname };
       if (debug) console.log("[lds] event is ", event);
 
       if (typeof handler === "string" && !path.isAbsolute(handler)) {
@@ -197,6 +197,7 @@ if (require.main === module) {
     max: Array.prototype.slice.call(str.match(/-?-max(?:=|== )(\d+)/) || [], 1)[0],
     handler: Array.prototype.slice.call(str.match(/-?-handler(?:=|== )([^ ]+)/) || [], 1)[0],
     port: Array.prototype.slice.call(str.match(/-?-port(?:=|== )(\d+)/) || [], 1)[0],
+    redirect: !!str.match(/-?-redirect((=|== )(t|T|true|True|TRUE))?/),
     reload: !str.match(/-?-reload(=|== )(false|False|False)/),
     root: Array.prototype.slice.call(str.match(/-?-root(?:=|== )([^ ]+)/) || [], 1)[0]
   });
