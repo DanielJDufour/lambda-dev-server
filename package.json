@@ -34,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/DanielJDufour/lambda-dev-server/issues"
   },
-  "homepage": "https://github.com/DanielJDufour/lambda-dev-server#readme"
+  "homepage": "https://github.com/DanielJDufour/lambda-dev-server#readme",
+  "devDependencies": {
+    "flug": "^2.8.2"
+  }
 }
