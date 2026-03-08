@@ -15,6 +15,32 @@ const get = options =>
     req.end();
   });
 
+const postForm = (options, payload) =>
+  new Promise((resolve, reject) => {
+    const postOptions = {
+      ...options,
+      method: "POST",
+      headers: {
+        ...options.headers,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Length": Buffer.byteLength(payload)
+      }
+    };
+
+    let data = "";
+    let headers;
+
+    const req = http.request(postOptions, res => {
+      headers = res.headers;
+      res.on("data", chunk => (data += chunk));
+      res.on("end", () => resolve({ data, headers }));
+    });
+
+    req.on("error", reject);
+    req.write(payload);
+    req.end();
+  });
+
 test(`"hello, world"`, async ({ eq }) => {
   const { port } = serve({
     debug: false,
@@ -171,4 +197,21 @@ test("env with absolute env path", async ({ eq }) => {
     method: "GET"
   });
   eq(data, "us-east-1");
+});
+
+test("application/x-www-form-urlencoded", async ({ eq }) => {
+  const { port } = serve({
+    cors: true,
+    debug: false,
+    handler: process.cwd() + "/test-function/parse-form.js",
+    max: 1
+  });
+  const options = {
+    hostname: "localhost",
+    port,
+    path: "/"
+  };
+  const payload = "name=lambda%2Ddev%2Dserver&key=value";
+  const { data } = await postForm(options, payload);
+  eq(JSON.parse(data), { name: ["lambda-dev-server"], key: ["value"] });
 });

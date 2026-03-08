@@ -74,6 +74,13 @@ function serve({ cors = false, env, handler, debug = false, max = Infinity, port
 
       const { url } = request;
 
+      const requestBody = await new Promise((resolve, reject) => {
+        let requestData = "";
+        request.on("data", chunk => (requestData += chunk.toString()));
+        request.on("end", () => resolve(requestData));
+        request.on("error", err => reject(err));
+      });
+
       if (debug) console.log(`[lds] received request for "${url}"`);
 
       if (url.startsWith("/favicon.ico")) return;
@@ -99,7 +106,7 @@ function serve({ cors = false, env, handler, debug = false, max = Infinity, port
         console.log("[lds] queryStringParameters:", queryStringParameters);
       }
 
-      const event = { queryStringParameters, path: pathname };
+      const event = { queryStringParameters, path: pathname, body: requestBody, isBase64Encoded: false };
       if (debug) console.log("[lds] event is ", event);
 
       if (typeof handler === "string" && !path.isAbsolute(handler)) {
